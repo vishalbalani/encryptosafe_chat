@@ -4,6 +4,7 @@ import 'package:encryptosafe/widgets/height_spacer.dart';
 import 'package:encryptosafe/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 
 class PageOne extends StatelessWidget {
   const PageOne({super.key});
@@ -20,7 +21,10 @@ class PageOne extends StatelessWidget {
         children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 30.w),
-            child: Image.asset("assets/images/user1.png"),
+            child: SvgPicture.asset(
+              "assets/images/onboard.svg",
+              width: 300,
+            ),
           ),
           const HeightSpacer(height: 100),
           Column(

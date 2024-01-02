@@ -7,6 +7,7 @@ import 'package:encryptosafe/widgets/pinput_theme.dart';
 import 'package:encryptosafe/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pinput/pinput.dart';
 
@@ -44,12 +45,11 @@ class OtpPage extends ConsumerWidget {
             children: [
               HeightSpacer(height: Constants.height * 0.12),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 30.w),
-                child: Image.asset(
-                  "assets/images/user1.png",
-                  width: Constants.width * 0.5,
-                ),
-              ),
+                  padding: EdgeInsets.symmetric(horizontal: 30.w),
+                  child: SvgPicture.asset(
+                    "assets/images/onboard.svg",
+                    width: Constants.width * 0.5,
+                  )),
               const HeightSpacer(
                 height: 26,
               ),

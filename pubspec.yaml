@@ -59,6 +59,7 @@ dependencies:
   firebase_messaging: ^14.7.9
   http: ^1.1.2
   flutter_notification_channel: ^2.0.0
+  flutter_svg: ^2.0.9
 
 dev_dependencies:
   flutter_test:

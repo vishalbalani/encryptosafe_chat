@@ -6,6 +6,7 @@ import 'package:encryptosafe/widgets/height_spacer.dart';
 import 'package:encryptosafe/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 
 class PageThree extends StatelessWidget {
   const PageThree({super.key});
@@ -22,14 +23,17 @@ class PageThree extends StatelessWidget {
         children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 30.w),
-            child: Image.asset("assets/images/user1.png"),
+            child: SvgPicture.asset(
+              "assets/images/onboard.svg",
+              width: 300,
+            ),
           ),
           const HeightSpacer(height: 100),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextWidget(
-                text: "ToDo with Riverpod",
+                text: "EncryptoSafe",
                 style: appstyle(30, Constants.white, FontWeight.w600),
               ),
               const HeightSpacer(height: 50),

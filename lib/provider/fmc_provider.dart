@@ -36,9 +36,6 @@ class FMCProvider {
           "body": msg,
           "android_channel_id": "chats"
         },
-        // "data": {
-        //   "some_data": "User ID: ${me.id}",
-        // },
       };
       var res = await post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
           headers: {
