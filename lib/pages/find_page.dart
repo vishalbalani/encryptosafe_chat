@@ -16,7 +16,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:radio_group_v2/radio_group_v2.dart';
 
 class FindPage extends ConsumerStatefulWidget {
-  const FindPage({Key? key}) : super(key: key);
+  const FindPage({super.key});
 
   @override
   _FindPageState createState() => _FindPageState();

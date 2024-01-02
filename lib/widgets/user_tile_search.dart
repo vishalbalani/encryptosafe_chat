@@ -7,9 +7,10 @@ import 'package:flutter/material.dart';
 
 class UserTileFind extends StatelessWidget {
   final Map<String, dynamic> userData;
-  void Function() onTapAction;
+  final Function() onTapAction;
 
-  UserTileFind({super.key, required this.userData, required this.onTapAction});
+  const UserTileFind(
+      {super.key, required this.userData, required this.onTapAction});
 
   @override
   Widget build(BuildContext context) {
