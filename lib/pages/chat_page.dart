@@ -76,9 +76,12 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           "time": FieldValue.serverTimestamp(),
           "lastMessageSendBy": uid,
         };
-        ref
-            .read(firestoreProvider)
-            .updateLastMessageSend(chatRoomId, lastMessageInfoMap);
+        ref.read(firestoreProvider).updateLastMessageSend(
+              chatRoomId,
+              widget.peerData['fmc_token'],
+              lastMessageInfoMap,
+              ref,
+            );
       });
 
       messageController.clear();

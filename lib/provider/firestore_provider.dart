@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:encryptosafe/provider/fmc_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -46,12 +47,16 @@ class FireStoreProviderNotifier {
     return chatroomid.replaceAll("_", "").replaceAll(user.uid, "");
   }
 
-  updateLastMessageSend(
-      String chatRoomId, Map<String, dynamic> lastMessageInfoMap) {
+  updateLastMessageSend(String chatRoomId, String fmc,
+      Map<String, dynamic> lastMessageInfoMap, ref) {
     return instance
         .collection("chatrooms")
         .doc(chatRoomId)
-        .update(lastMessageInfoMap);
+        .update(lastMessageInfoMap)
+        .then((value) => {
+              ref.read(fmcProvider).sendPushNotification(
+                  fmc, user.displayName, lastMessageInfoMap['lastMessage'])
+            });
   }
 
   updatefmc(String fmc) {

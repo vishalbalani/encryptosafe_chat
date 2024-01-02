@@ -3,23 +3,18 @@ import 'package:encryptosafe/constants/constants.dart';
 import 'package:encryptosafe/firebase_options.dart';
 import 'package:encryptosafe/model/db_handle.dart';
 import 'package:encryptosafe/pages/onboarding/onboarding_page.dart';
-import 'package:encryptosafe/provider/firestore_provider.dart';
 import 'package:encryptosafe/widgets/bottom_nav.dart';
 import 'package:encryptosafe/widgets/route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_notification_channel/flutter_notification_channel.dart';
+import 'package:flutter_notification_channel/notification_importance.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  await DatabaseHandler.instance.database;
+void main() async {
+  await _initializeFirebase();
 
   runApp(const ProviderScope(child: MyApp()));
 }
@@ -74,4 +69,16 @@ class MyApp extends ConsumerWidget {
       },
     );
   }
+}
+
+_initializeFirebase() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DatabaseHandler.instance.database;
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await FlutterNotificationChannel.registerNotificationChannel(
+      description: 'For Showing Message Notification',
+      id: 'chats',
+      importance: NotificationImportance.IMPORTANCE_HIGH,
+      name: 'Chats');
 }

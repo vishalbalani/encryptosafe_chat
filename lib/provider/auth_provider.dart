@@ -5,7 +5,6 @@ import 'package:encryptosafe/widgets/custom_dialog.dart';
 import 'package:encryptosafe/widgets/random_utils.dart';
 import 'package:encryptosafe/widgets/route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -47,15 +46,14 @@ class AuthProviderNotifier {
       final userDocSnapshot = await userDocRef.get();
 
       if (userDocSnapshot.exists) {
-        await userDocRef.update({
-          "public": publicKey,
-        });
+        await userDocRef.update({"public": publicKey});
       } else {
         var name = RandomUtils().getRandomName();
         var username = await RandomUtils().generateUniqueUsername(
           name: name,
           phoneNumber: phone,
         );
+        await UserCredential.user!.updateDisplayName(name);
         await userDocRef.set({
           "uid": UserCredential.user!.uid,
           "username": username,
@@ -65,7 +63,7 @@ class AuthProviderNotifier {
           "public": publicKey,
           "is_online": true,
           "last_active": "",
-          "fmc_token": '',
+          "fmc_token": ""
         });
       }
 
@@ -114,6 +112,30 @@ class AuthProviderNotifier {
       showAlertDialog(context: context, message: e.toString());
     }
   }
+
+  // Inside AuthProviderNotifier class or wherever you have access to the User instance
+  // void updateDisplayName(String displayName) async {
+  //   try {
+  //     // Get the current user
+  //     User? currentUser = auth.currentUser;
+
+  //     if (currentUser != null) {
+  //       await currentUser.updateDisplayName(displayName);
+
+  //       // Update display name in Firestore
+  //       await FirebaseFirestore.instance
+  //           .collection('user')
+  //           .doc(currentUser.uid)
+  //           .update({'name': displayName});
+
+  //       print('Display name updated successfully: $displayName');
+  //     } else {
+  //       print('User not found.');
+  //     }
+  //   } catch (e) {
+  //     print('Error updating display name: $e');
+  //   }
+  // }
 }
 
 final authControllerProvider = Provider((ref) {
