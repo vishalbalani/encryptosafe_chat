@@ -121,4 +121,22 @@ class FireStoreProviderNotifier {
       'last_active': DateTime.now().millisecondsSinceEpoch.toString(),
     });
   }
+
+  Future<void> updateMessageReadStatus(chatRoomId, messageId) async {
+    return instance
+        .collection('chatrooms')
+        .doc(chatRoomId)
+        .collection('chats')
+        .doc(messageId)
+        .update({
+      'read': DateTime.now().millisecondsSinceEpoch.toString()
+    }).then((value) => resetReadCount(chatRoomId));
+  }
+
+  Future<void> resetReadCount(chatRoomId) async {
+    return instance
+        .collection('chatrooms')
+        .doc(chatRoomId)
+        .update({'unreadCount': 0});
+  }
 }

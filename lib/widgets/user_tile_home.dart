@@ -1,4 +1,5 @@
 import 'package:encryptosafe/constants/constants.dart';
+import 'package:encryptosafe/helper/date_util.dart';
 import 'package:encryptosafe/pages/chat_page.dart';
 import 'package:encryptosafe/widgets/appStyle.dart';
 import 'package:encryptosafe/widgets/height_spacer.dart';
@@ -10,27 +11,35 @@ class UserTile extends StatelessWidget {
   final Map<String, dynamic> userData;
   final String lastMessage;
   final String time;
-  final bool isMessageRead;
+  final int count;
+  final bool isSentByMe;
 
   const UserTile({
-    super.key,
+    Key? key,
     required this.userData,
     required this.lastMessage,
     required this.time,
-    required this.isMessageRead,
-  });
+    required this.count,
+    required this.isSentByMe,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final String name = userData['name'] ?? '';
-    // final String imageUrl = userData['imageURL'] ?? '';
+    final formatedtime = MyDateUtil.DataTimeinAMPM(time);
 
-    // ImageProvider<Object>? imageProvider;
-    // if (imageUrl.isEmpty || imageUrl == '') {
-    //   imageProvider = AssetImage('assets/images/user1.png');
-    // } else {
-    //   imageProvider = NetworkImage(imageUrl);
-    // }
+    bool isSentMessage = isSentByMe;
+    FontWeight messageFontWeight = FontWeight.normal;
+    String messageText = lastMessage;
+    bool showDot = false;
+
+    if (!isSentMessage) {
+      if (count > 0) {
+        messageText = '$count new messages';
+        messageFontWeight = FontWeight.bold;
+        showDot = true;
+      }
+    }
 
     return InkWell(
       onTap: () {
@@ -40,37 +49,56 @@ class UserTile extends StatelessWidget {
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-        child: Row(
-          children: <Widget>[
-            const CircleAvatar(
-              backgroundImage: AssetImage('assets/images/user1.png'),
-              maxRadius: 30,
-            ),
-            const WidthSpacer(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextWidget(
-                    text: name,
-                    style: appstyle(
-                      16,
-                      Constants.white,
-                      FontWeight.normal,
-                    ),
+        child: Stack(
+          children: [
+            Row(
+              children: <Widget>[
+                const CircleAvatar(
+                  backgroundImage: AssetImage('assets/images/user1.png'),
+                  maxRadius: 30,
+                ),
+                const WidthSpacer(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextWidget(
+                        text: name,
+                        style: appstyle(
+                          16,
+                          Constants.white,
+                          FontWeight.normal,
+                        ),
+                      ),
+                      const HeightSpacer(height: 6),
+                      TextWidget(
+                        text: messageText,
+                        style: appstyle(
+                          13,
+                          Constants.white,
+                          messageFontWeight,
+                        ),
+                      ),
+                    ],
                   ),
-                  const HeightSpacer(height: 6),
-                  TextWidget(
-                      text: lastMessage,
-                      style: appstyle(13, Constants.white,
-                          isMessageRead ? FontWeight.bold : FontWeight.normal)),
-                ],
-              ),
+                ),
+                if (showDot)
+                  const Icon(
+                    Icons.circle_rounded,
+                    color: Constants.white,
+                    size: 16,
+                  ),
+                const WidthSpacer(width: 16), // Spacer between message and time
+                TextWidget(
+                  text: formatedtime,
+                  style: appstyle(
+                    12,
+                    Constants.white,
+                    messageFontWeight,
+                  ),
+                ),
+              ],
             ),
-            TextWidget(
-                text: time,
-                style: appstyle(12, Constants.white,
-                    isMessageRead ? FontWeight.bold : FontWeight.normal)),
           ],
         ),
       ),

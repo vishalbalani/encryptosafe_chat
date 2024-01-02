@@ -126,12 +126,14 @@ class _HomePageState extends ConsumerState<HomePage> {
                     final username =
                         ref.read(firestoreProvider).getUsername(ds.id);
                     if (userDataMap.containsKey(username)) {
+                      final bool isSentByMe = ds['lastMessageSendBy'] ==
+                          ref.read(firestoreProvider).getUId();
                       return UserTile(
-                        userData: userDataMap[username]!,
-                        lastMessage: ds['lastMessage'],
-                        time: ds['lastMessageSendTs'],
-                        isMessageRead: false,
-                      );
+                          userData: userDataMap[username]!,
+                          lastMessage: ds['lastMessage'],
+                          time: ds['lastMessageSendTs'],
+                          isSentByMe: isSentByMe,
+                          count: ds['unreadCount']);
                     } else {
                       return const SizedBox();
                     }

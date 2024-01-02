@@ -9,7 +9,6 @@ import 'package:encryptosafe/widgets/text_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:random_string/random_string.dart';
 import 'package:uuid/uuid.dart';
 
@@ -55,14 +54,15 @@ class _ChatPageState extends ConsumerState<ChatPage> {
     final String message = messageController.text.trim();
 
     if (message.isNotEmpty) {
-      final DateTime now = DateTime.now();
-      final String formattedDate = DateFormat('h:mma').format(now);
+      final now = DateTime.now().millisecondsSinceEpoch.toString();
       final String messageId = const Uuid().v1() + randomAlphaNumeric(10);
 
       final Map<String, dynamic> messageInfoMap = {
+        "messageId": messageId,
         "message": message,
         "sendBy": uid,
-        "ts": formattedDate,
+        "send": now,
+        "read": "",
         "time": FieldValue.serverTimestamp(),
       };
 
@@ -72,7 +72,8 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           .then((value) {
         final Map<String, dynamic> lastMessageInfoMap = {
           "lastMessage": message,
-          "lastMessageSendTs": formattedDate,
+          "lastMessageSendTs": now,
+          "unreadCount": FieldValue.increment(1),
           "time": FieldValue.serverTimestamp(),
           "lastMessageSendBy": uid,
         };
@@ -115,8 +116,9 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               final bool isSentByMe = message['sendBy'] == uid;
 
               return ChatMessageTile(
-                message: message['message'],
+                message: message,
                 sendByMe: isSentByMe,
+                chatRoomId: chatRoomId,
               );
             },
           );

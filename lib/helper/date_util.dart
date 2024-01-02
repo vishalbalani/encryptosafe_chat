@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class MyDateUtil {
   // for getting formatted time from milliSecondsSinceEpochs String
@@ -70,6 +71,17 @@ class MyDateUtil {
     String month = _getMonth(time);
 
     return 'Last seen on ${time.day} $month on $formattedTime';
+  }
+
+  static String DataTimeinAMPM(String time) {
+    int timestamp = int.parse(time);
+
+    // Convert Unix formattedDateTimetimestamp in milliseconds to DateTime
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+
+    // Format DateTime to a desired format
+    final String formattedDate = DateFormat('h:mma').format(dateTime);
+    return formattedDate;
   }
 
   // get month name from month no. or index
