@@ -80,7 +80,6 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           "lastMessageSendTs": formattedDate,
           "time": FieldValue.serverTimestamp(),
           "lastMessageSendBy": uid,
-          "lastMessageRead": false
         };
         ref
             .read(firestoreProvider)

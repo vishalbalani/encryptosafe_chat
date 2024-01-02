@@ -12,7 +12,7 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class HomePage extends ConsumerStatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -21,10 +21,10 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   final TextEditingController search = TextEditingController();
   late Future<Map<String, Map<String, dynamic>>> userDataMap;
-  late Stream<QuerySnapshot<Map<String, dynamic>>> chatRoomsStream =
-      const Stream.empty();
 
   var uid;
+  late Stream<QuerySnapshot<Map<String, dynamic>>> chatRoomsStream =
+      const Stream.empty();
 
   @override
   void initState() {
@@ -36,21 +36,19 @@ class _HomePageState extends ConsumerState<HomePage> {
     final privateKeyMap = await DatabaseHandler.instance.getPrivateKey();
 
     if (privateKeyMap != null) {
-      setState(() {
-        uid = privateKeyMap['id'];
-      });
-
-      ref.read(UidProvider.notifier).setUid(uid);
-
-      final chatRoomsStreamResult =
-          await ref.read(firestoreProvider).getChatRooms(uid);
-
-      // Assign the Stream<QuerySnapshot<Object?>> to chatRoomsStream
-      chatRoomsStream =
-          chatRoomsStreamResult as Stream<QuerySnapshot<Map<String, dynamic>>>;
-
-      userDataMap = fetchUserDataForAllChatRooms(chatRoomsStream);
+      uid = privateKeyMap['id'];
+      setState(() {});
     }
+    ref.read(UidProvider.notifier).setUid(uid);
+
+    final chatRoomsStreamResult =
+        await ref.read(firestoreProvider).getChatRooms(uid);
+
+    // Assign the Stream<QuerySnapshot<Object?>> to chatRoomsStream
+    chatRoomsStream =
+        chatRoomsStreamResult as Stream<QuerySnapshot<Map<String, dynamic>>>;
+
+    userDataMap = fetchUserDataForAllChatRooms(chatRoomsStream);
   }
 
   Future<Map<String, Map<String, dynamic>>> fetchUserDataForAllChatRooms(
@@ -65,12 +63,15 @@ class _HomePageState extends ConsumerState<HomePage> {
         .where('uid', whereIn: usernames.toList())
         .get();
 
-    return {for (var doc in querySnapshot.docs) doc.id: doc.data()};
+    final userDataMap = {
+      for (var doc in querySnapshot.docs) doc.id: doc.data()
+    };
+
+    return userDataMap;
   }
 
   @override
   Widget build(BuildContext context) {
-    // Return a loading or placeholder widget while uid is being fetched
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -108,15 +109,18 @@ class _HomePageState extends ConsumerState<HomePage> {
         stream: chatRoomsStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+                child: CircularProgressIndicator(color: Constants.white));
           } else if (snapshot.hasError) {
-            return const Center(
-              child: Text('Error: Something went wrong!'),
-            );
+            return Center(
+                child: TextWidget(
+                    text: 'Error: Something went wrong!',
+                    style: appstyle(16, Constants.white, FontWeight.bold)));
           } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return const Center(
-              child: Text('No chat room found'),
-            );
+            return Center(
+                child: TextWidget(
+                    text: 'No chat room found',
+                    style: appstyle(16, Constants.white, FontWeight.bold)));
           } else {
             return FutureBuilder<Map<String, Map<String, dynamic>>>(
               future: userDataMap,
@@ -124,7 +128,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                 if (userDataSnapshot.connectionState ==
                         ConnectionState.waiting ||
                     !userDataSnapshot.hasData) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(
+                      child: CircularProgressIndicator(color: Constants.white));
                 }
 
                 final userDataMap = userDataSnapshot.data!;
@@ -141,7 +146,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                         userData: userDataMap[username]!,
                         lastMessage: ds['lastMessage'],
                         time: ds['lastMessageSendTs'],
-                        isMessageRead: ds['lastMessageRead'],
+                        isMessageRead: false,
                       );
                     } else {
                       return const SizedBox();
