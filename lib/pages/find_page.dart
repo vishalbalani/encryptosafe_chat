@@ -4,7 +4,6 @@ import 'package:encryptosafe/pages/chat_page.dart';
 import 'package:encryptosafe/provider/filter_provider.dart';
 import 'package:encryptosafe/provider/firestore_provider.dart';
 import 'package:encryptosafe/provider/search_provider.dart';
-import 'package:encryptosafe/provider/uid_provider.dart';
 import 'package:encryptosafe/widgets/appStyle.dart';
 import 'package:encryptosafe/widgets/custom_textfield.dart';
 import 'package:encryptosafe/widgets/text_widget.dart';
@@ -28,12 +27,8 @@ class _FindPageState extends ConsumerState<FindPage> {
 
   @override
   void initState() {
-    getUid();
+    uid = ref.read(firestoreProvider).getUId();
     super.initState();
-  }
-
-  void getUid() async {
-    uid = await ref.read(UidProvider);
   }
 
   @override
@@ -43,7 +38,8 @@ class _FindPageState extends ConsumerState<FindPage> {
   }
 
   void onTapAction(QueryDocumentSnapshot snapshot) {
-    var chatRoomId = getChatRoomIdbyUsername(uid!, snapshot['uid']);
+    var chatRoomId =
+        ref.read(firestoreProvider).getChatRoomIdbyUsername(snapshot['uid']);
     Map<String, dynamic> chatRoomInfoMap = {
       "users": [uid, snapshot['uid']],
     };

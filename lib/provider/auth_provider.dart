@@ -5,6 +5,7 @@ import 'package:encryptosafe/widgets/custom_dialog.dart';
 import 'package:encryptosafe/widgets/random_utils.dart';
 import 'package:encryptosafe/widgets/route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -46,7 +47,9 @@ class AuthProviderNotifier {
       final userDocSnapshot = await userDocRef.get();
 
       if (userDocSnapshot.exists) {
-        await userDocRef.update({"public": publicKey});
+        await userDocRef.update({
+          "public": publicKey,
+        });
       } else {
         var name = RandomUtils().getRandomName();
         var username = await RandomUtils().generateUniqueUsername(
@@ -60,6 +63,9 @@ class AuthProviderNotifier {
           "phone": phone,
           "imageURL": "",
           "public": publicKey,
+          "is_online": true,
+          "last_active": "",
+          "fmc_token": '',
         });
       }
 

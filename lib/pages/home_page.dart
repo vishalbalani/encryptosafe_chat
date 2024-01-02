@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:encryptosafe/constants/constants.dart';
-import 'package:encryptosafe/model/db_handle.dart';
 import 'package:encryptosafe/provider/firestore_provider.dart';
-import 'package:encryptosafe/provider/uid_provider.dart';
+import 'package:encryptosafe/provider/fmc_provider.dart';
 import 'package:encryptosafe/widgets/appStyle.dart';
 import 'package:encryptosafe/widgets/custom_textfield.dart';
 import 'package:encryptosafe/widgets/text_widget.dart';
 import 'package:encryptosafe/widgets/user_tile_home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -22,7 +22,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   final TextEditingController search = TextEditingController();
   late Future<Map<String, Map<String, dynamic>>> userDataMap;
 
-  var uid;
   late Stream<QuerySnapshot<Map<String, dynamic>>> chatRoomsStream =
       const Stream.empty();
 
@@ -30,44 +29,30 @@ class _HomePageState extends ConsumerState<HomePage> {
   void initState() {
     super.initState();
     readLocal();
+    SystemChannels.lifecycle.setMessageHandler((message) {
+      if (message.toString().contains("pause")) {
+        ref.read(firestoreProvider).updateActiveStatus(false);
+      }
+      if (message.toString().contains("resume")) {
+        ref.read(firestoreProvider).updateActiveStatus(true);
+      }
+      return Future.value(message);
+    });
   }
 
   Future<void> readLocal() async {
-    final privateKeyMap = await DatabaseHandler.instance.getPrivateKey();
-
-    if (privateKeyMap != null) {
-      uid = privateKeyMap['id'];
-      setState(() {});
-    }
-    ref.read(UidProvider.notifier).setUid(uid);
-
+    ref.read(fmcProvider).getFirebaseMessagingToken(ref);
     final chatRoomsStreamResult =
-        await ref.read(firestoreProvider).getChatRooms(uid);
+        await ref.read(firestoreProvider).getChatRooms();
 
     // Assign the Stream<QuerySnapshot<Object?>> to chatRoomsStream
     chatRoomsStream =
         chatRoomsStreamResult as Stream<QuerySnapshot<Map<String, dynamic>>>;
 
-    userDataMap = fetchUserDataForAllChatRooms(chatRoomsStream);
-  }
-
-  Future<Map<String, Map<String, dynamic>>> fetchUserDataForAllChatRooms(
-      Stream<QuerySnapshot<Map<String, dynamic>>> chatStream) async {
-    final chatRoomsSnapshot = await chatStream.first;
-    final usernames = chatRoomsSnapshot.docs
-        .map((ds) => ds.id.replaceAll("_", "").replaceAll(uid, ""))
-        .toSet();
-
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('user')
-        .where('uid', whereIn: usernames.toList())
-        .get();
-
-    final userDataMap = {
-      for (var doc in querySnapshot.docs) doc.id: doc.data()
-    };
-
-    return userDataMap;
+    userDataMap = ref
+        .read(firestoreProvider)
+        .fetchUserDataForAllChatRooms(chatRoomsStream);
+    setState(() {});
   }
 
   @override
@@ -139,8 +124,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   itemBuilder: (context, index) {
                     final ds = snapshot.data!.docs[index];
                     final username =
-                        ds.id.replaceAll("_", "").replaceAll(uid, "");
-
+                        ref.read(firestoreProvider).getUsername(ds.id);
                     if (userDataMap.containsKey(username)) {
                       return UserTile(
                         userData: userDataMap[username]!,

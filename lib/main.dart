@@ -3,6 +3,7 @@ import 'package:encryptosafe/constants/constants.dart';
 import 'package:encryptosafe/firebase_options.dart';
 import 'package:encryptosafe/model/db_handle.dart';
 import 'package:encryptosafe/pages/onboarding/onboarding_page.dart';
+import 'package:encryptosafe/provider/firestore_provider.dart';
 import 'package:encryptosafe/widgets/bottom_nav.dart';
 import 'package:encryptosafe/widgets/route.dart';
 import 'package:firebase_auth/firebase_auth.dart';
