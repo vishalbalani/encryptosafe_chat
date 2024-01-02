@@ -1,5 +1,4 @@
 import 'package:encryptosafe/constants/constants.dart';
-import 'package:encryptosafe/pages/chat_page.dart';
 import 'package:encryptosafe/widgets/appStyle.dart';
 import 'package:encryptosafe/widgets/height_spacer.dart';
 import 'package:encryptosafe/widgets/text_widget.dart';
@@ -8,11 +7,9 @@ import 'package:flutter/material.dart';
 
 class UserTileFind extends StatelessWidget {
   final Map<String, dynamic> userData;
+  void Function() onTapAction;
 
-  const UserTileFind({
-    super.key,
-    required this.userData,
-  });
+  UserTileFind({super.key, required this.userData, required this.onTapAction});
 
   @override
   Widget build(BuildContext context) {
@@ -21,11 +18,7 @@ class UserTileFind extends StatelessWidget {
     final String username = userData['username'] ?? '';
 
     return InkWell(
-      onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ChatPage(peerData: userData),
-        ));
-      },
+      onTap: onTapAction,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
         child: Row(
@@ -50,7 +43,7 @@ class UserTileFind extends StatelessWidget {
                   const HeightSpacer(height: 6),
                   Text(
                     username,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 13,
                       color: Constants.white,
                       fontWeight: FontWeight.normal,

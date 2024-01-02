@@ -151,6 +151,9 @@ class _FindPageState extends ConsumerState<FindPage> {
                     snapshot.data!.docs[index].data() as Map<String, dynamic>;
                 return UserTileFind(
                   userData: userData,
+                  onTapAction: () {
+                    onTapAction(snapshot.data!.docs[index]);
+                  },
                 );
               },
             );

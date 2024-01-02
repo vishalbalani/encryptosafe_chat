@@ -59,7 +59,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 30.w),
                 child: Image.asset(
-                  "assets/images/todo.png",
+                  "assets/images/user1.png",
                   width: 300,
                 ),
               ),

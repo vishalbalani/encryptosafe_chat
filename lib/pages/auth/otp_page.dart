@@ -46,7 +46,7 @@ class OtpPage extends ConsumerWidget {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 30.w),
                 child: Image.asset(
-                  "assets/images/todo.png",
+                  "assets/images/user1.png",
                   width: Constants.width * 0.5,
                 ),
               ),

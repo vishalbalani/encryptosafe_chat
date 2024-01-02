@@ -20,7 +20,7 @@ class PageOne extends StatelessWidget {
         children: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 30.w),
-            child: Image.asset("assets/images/todo.png"),
+            child: Image.asset("assets/images/user1.png"),
           ),
           const HeightSpacer(height: 100),
           Column(
