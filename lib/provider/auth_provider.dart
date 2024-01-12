@@ -85,6 +85,10 @@ class AuthProviderNotifier {
     }
   }
 
+  void SignOut() {
+    auth.signOut();
+  }
+
   void sendOtp({required BuildContext context, required String phone}) async {
     try {
       await auth.verifyPhoneNumber(
@@ -112,30 +116,6 @@ class AuthProviderNotifier {
       showAlertDialog(context: context, message: e.toString());
     }
   }
-
-  // Inside AuthProviderNotifier class or wherever you have access to the User instance
-  // void updateDisplayName(String displayName) async {
-  //   try {
-  //     // Get the current user
-  //     User? currentUser = auth.currentUser;
-
-  //     if (currentUser != null) {
-  //       await currentUser.updateDisplayName(displayName);
-
-  //       // Update display name in Firestore
-  //       await FirebaseFirestore.instance
-  //           .collection('user')
-  //           .doc(currentUser.uid)
-  //           .update({'name': displayName});
-
-  //       print('Display name updated successfully: $displayName');
-  //     } else {
-  //       print('User not found.');
-  //     }
-  //   } catch (e) {
-  //     print('Error updating display name: $e');
-  //   }
-  // }
 }
 
 final authControllerProvider = Provider((ref) {

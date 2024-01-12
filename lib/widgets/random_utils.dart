@@ -5,7 +5,6 @@ import 'package:random_name_generator/random_name_generator.dart';
 
 class RandomUtils {
   String getRandomName() {
-    print("3");
     var random = Random();
     var zones = [
       Zone.france,
@@ -34,8 +33,7 @@ class RandomUtils {
 
     // Shuffle the characters in the username
     usernameChars.shuffle();
-    username = usernameChars.join('');
-    print("1");
+    username = randomAlphaNumeric(1) + usernameChars.join('');
 
     final usersSnapshot = await FirebaseFirestore.instance
         .collection('user')
@@ -46,7 +44,6 @@ class RandomUtils {
       // If a user with the same username already exists, try generating a new one
       return generateUniqueUsername(name: name, phoneNumber: phoneNumber);
     } else {
-      print("0");
       return username;
     }
   }

@@ -60,10 +60,15 @@ dependencies:
   http: ^1.1.2
   flutter_notification_channel: ^2.0.0
   flutter_svg: ^2.0.9
+  flutter_native_splash: ^2.3.9
+  
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  # flutter_launcher_icons: ^0.13.1
+
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -76,6 +81,14 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+flutter_native_splash:
+  color: "#2a2b2e"
+  image: "assets/images/app_logo.png"
+  color_dark: "#2a2b2e"
+  image_dark: "assets/images/app_logo.png"
+
+  android_12:
+    color: "#2a2b2e"
 
 # The following section is specific to Flutter packages.
 flutter:

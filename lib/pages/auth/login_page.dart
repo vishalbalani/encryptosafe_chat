@@ -21,6 +21,7 @@ class LoginPage extends ConsumerStatefulWidget {
 
 class _LoginPageState extends ConsumerState<LoginPage> {
   final TextEditingController phone = TextEditingController();
+  bool isLoading = false;
 
   Country country = Country(
     phoneCode: "91",
@@ -42,6 +43,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         message: "Please enter your phone number",
       );
     } else {
+      setState(() {
+        isLoading = true;
+      });
       ref.read(authControllerProvider).sendSms(
             context: context,
             phone: '+${country.phoneCode}${phone.text}',
@@ -125,6 +129,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   color: Constants.darkBK,
                   color2: Constants.white,
                   text: "Send Code",
+                  isLoading: isLoading,
                 ),
               ),
             ],

@@ -1,7 +1,12 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:encryptosafe/constants/constants.dart';
 import 'package:encryptosafe/helper/date_util.dart';
+import 'package:encryptosafe/model/db_handle.dart';
 import 'package:encryptosafe/provider/firestore_provider.dart';
+import 'package:encryptosafe/provider/privatekey_provider.dart';
+import 'package:encryptosafe/provider/rsa_provider.dart';
 import 'package:encryptosafe/widgets/appStyle.dart';
 import 'package:encryptosafe/widgets/chat_message_tile.dart';
 import 'package:encryptosafe/widgets/custom_textfield.dart';
@@ -25,6 +30,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   var uid;
   late String chatRoomId;
   late Stream<QuerySnapshot> messageStream = const Stream.empty();
+  var privateKeyDN;
 
   @override
   void initState() {
@@ -40,8 +46,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
   void readLocal() async {
     setState(() {
+      privateKeyDN = ref.read(privateKeyDNProvider);
       uid = ref.read(firestoreProvider).getUId();
     });
+    log("LOG FILE: ${privateKeyDN['n']}");
 
     chatRoomId = ref
         .read(firestoreProvider)
@@ -52,6 +60,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
   void addMessage() {
     final String message = messageController.text.trim();
+    final String encryptedMessage = encrypt(message, widget.peerData['public']);
 
     if (message.isNotEmpty) {
       final now = DateTime.now().millisecondsSinceEpoch.toString();
@@ -59,7 +68,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
 
       final Map<String, dynamic> messageInfoMap = {
         "messageId": messageId,
-        "message": message,
+        "message": encryptedMessage,
         "sendBy": uid,
         "send": now,
         "read": "",
@@ -71,7 +80,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           .addMessage(chatRoomId, messageId, messageInfoMap)
           .then((value) {
         final Map<String, dynamic> lastMessageInfoMap = {
-          "lastMessage": message,
+          "lastMessage": encryptedMessage,
           "lastMessageSendTs": now,
           "unreadCount": FieldValue.increment(1),
           "time": FieldValue.serverTimestamp(),
@@ -84,8 +93,27 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               ref,
             );
       });
+      // Store the message in SQFlite database under the chatRoomId
+      DatabaseHandler.instance.addOrUpdateMessages(chatRoomId, message);
 
       messageController.clear();
+      // fetchMessagesForChatRoom(chatRoomId);
+    }
+  }
+
+  void fetchMessagesForChatRoom(String chatRoomId) async {
+    List<String> messages =
+        await DatabaseHandler.instance.getMessagesForChatRoomId(chatRoomId);
+
+    // Use the retrieved messages list
+    if (messages.isNotEmpty) {
+      print('Messages for ChatRoom $chatRoomId:');
+
+      for (String message in messages) {
+        log(message);
+      }
+    } else {
+      print('No messages found for ChatRoom $chatRoomId');
     }
   }
 
@@ -116,10 +144,10 @@ class _ChatPageState extends ConsumerState<ChatPage> {
               final bool isSentByMe = message['sendBy'] == uid;
 
               return ChatMessageTile(
-                message: message,
-                sendByMe: isSentByMe,
-                chatRoomId: chatRoomId,
-              );
+                  message: message,
+                  sendByMe: isSentByMe,
+                  chatRoomId: chatRoomId,
+                  privateKeyDN: privateKeyDN);
             },
           );
         }

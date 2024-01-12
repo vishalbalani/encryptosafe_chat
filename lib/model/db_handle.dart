@@ -3,6 +3,7 @@ import 'package:path/path.dart';
 
 class DatabaseHandler {
   static Database? _database;
+  static const messagesTable = 'messages';
   static final DatabaseHandler instance = DatabaseHandler._init();
 
   DatabaseHandler._init();
@@ -28,6 +29,66 @@ class DatabaseHandler {
       version: 1,
       onCreate: _createDB,
     );
+  }
+
+  Future<void> addOrUpdateMessages(String chatRoomId, String message) async {
+    final db = await instance.database;
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS $messagesTable (
+        chatRoomId TEXT PRIMARY KEY,
+        messages TEXT
+      )
+    ''');
+
+    final List<Map<String, dynamic>> result = await db.query(
+      messagesTable,
+      where: 'chatRoomId = ?',
+      whereArgs: [chatRoomId],
+    );
+
+    if (result.isNotEmpty) {
+      final String existingMessages = result[0]['messages'];
+      final List<String> messagesList = existingMessages.split(',');
+
+      messagesList.add(message);
+
+      await db.update(
+        messagesTable,
+        {
+          'messages': messagesList.join(','),
+        },
+        where: 'chatRoomId = ?',
+        whereArgs: [chatRoomId],
+      );
+    } else {
+      await db.insert(
+        messagesTable,
+        {
+          'chatRoomId': chatRoomId,
+          'messages': message,
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+  }
+
+  Future<List<String>> getMessagesForChatRoomId(String chatRoomId) async {
+    final db = await instance.database;
+
+    final List<Map<String, dynamic>> result = await db.query(
+      messagesTable,
+      where: 'chatRoomId = ?',
+      whereArgs: [chatRoomId],
+    );
+
+    if (result.isNotEmpty) {
+      final String messages = result[0]['messages'];
+      final List<String> messageList = messages.split(',');
+      return messageList;
+    }
+
+    return [];
   }
 
   Future<void> _createDB(Database db, int version) async {
@@ -76,19 +137,4 @@ class DatabaseHandler {
     }
     return null;
   }
-
-  // Future<void> fetchAndPrintPrivateKey() async {
-  //   final privateKeyMap = await DatabaseHandler.instance.getPrivateKey();
-
-  //   if (privateKeyMap != null) {
-  //     final d = privateKeyMap['d'];
-  //     final n = privateKeyMap['n'];
-  //     final uid = privateKeyMap['id'];
-  //     return []
-  //     print('Private Key (d): $d');
-  //     print('Private Key (n): $n');
-  //   } else {
-  //     print('Private key not found.');
-  //   }
-  // }
 }

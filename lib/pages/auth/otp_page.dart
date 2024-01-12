@@ -11,7 +11,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pinput/pinput.dart';
 
-class OtpPage extends ConsumerWidget {
+class OtpPage extends ConsumerStatefulWidget {
   const OtpPage({
     super.key,
     required this.smsCodeId,
@@ -21,19 +21,29 @@ class OtpPage extends ConsumerWidget {
   final String smsCodeId;
   final String phone;
 
+  @override
+  ConsumerState<OtpPage> createState() => _OtpPageState();
+}
+
+class _OtpPageState extends ConsumerState<OtpPage> {
+  bool isLoading = false;
+
   void verifyOtpCode(BuildContext context, WidgetRef ref, String smsCode) {
+    setState(() {
+      isLoading = true;
+    });
     ref.read(AuthProvider).verifyOtp(
-          phone: phone,
+          phone: widget.phone,
           context: context,
-          verificationId: smsCodeId,
-          smsCodeId: smsCodeId,
+          verificationId: widget.smsCodeId,
+          smsCodeId: widget.smsCodeId,
           smsCode: smsCode,
           mounted: true,
         );
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -101,7 +111,11 @@ class OtpPage extends ConsumerWidget {
                     ),
                   ],
                 ),
-              )
+              ),
+              if (isLoading) // Show CircularProgressIndicator if isLoading is true
+                const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Constants.white),
+                ),
             ],
           ),
         ),

@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
   const CustomButton({
-    super.key,
+    Key? key,
     this.onTap,
     required this.width,
     required this.height,
     this.color2,
     required this.color,
     required this.text,
-  });
+    this.isLoading = false, // New isLoading parameter with default value false
+  }) : super(key: key);
 
   final void Function()? onTap;
   final double width;
@@ -19,6 +20,7 @@ class CustomButton extends StatelessWidget {
   final Color? color2;
   final Color color;
   final String text;
+  final bool isLoading; // New isLoading parameter
 
   @override
   Widget build(BuildContext context) {
@@ -38,10 +40,15 @@ class CustomButton extends StatelessWidget {
           ),
         ),
         child: Center(
-          child: TextWidget(
-            text: text,
-            style: appstyle(18, color, FontWeight.bold),
-          ),
+          child: isLoading // Check if isLoading is true
+              ? CircularProgressIndicator(
+                  // Display CircularProgressIndicator if true
+                  valueColor: AlwaysStoppedAnimation<Color>(color),
+                )
+              : TextWidget(
+                  text: text,
+                  style: appstyle(18, color, FontWeight.bold),
+                ),
         ),
       ),
     );
