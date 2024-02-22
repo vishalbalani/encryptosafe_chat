@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:encryptosafe/model/db_handle.dart';
-import 'package:encryptosafe/provider/rsa_provider.dart';
 import 'package:encryptosafe/widgets/custom_dialog.dart';
 import 'package:encryptosafe/widgets/random_utils.dart';
 import 'package:encryptosafe/widgets/route.dart';
@@ -34,10 +32,6 @@ class AuthProviderNotifier {
 
       final UserCredential = await auth.signInWithCredential(credential);
 
-      final keys = generateRSAKeys();
-      final publicKey = keys['public'];
-      final privateKey = keys['private'];
-      final uid = UserCredential.user!.uid;
 
       final userDocRef = FirebaseFirestore.instance
           .collection('user')
@@ -46,7 +40,7 @@ class AuthProviderNotifier {
       final userDocSnapshot = await userDocRef.get();
 
       if (userDocSnapshot.exists) {
-        await userDocRef.update({"public": publicKey});
+        
       } else {
         var name = RandomUtils().getRandomName();
         var username = await RandomUtils().generateUniqueUsername(
@@ -60,18 +54,14 @@ class AuthProviderNotifier {
           "name": name,
           "phone": phone,
           "imageURL": "",
-          "public": publicKey,
+          "public": '',
           "is_online": true,
           "last_active": "",
           "fmc_token": ""
         });
       }
 
-      await DatabaseHandler.instance.addPrivateKey(
-        privateKey['d'],
-        privateKey['n'],
-        uid,
-      );
+      
 
       if (!mounted) return;
 
@@ -83,6 +73,10 @@ class AuthProviderNotifier {
     } on FirebaseAuth catch (e) {
       showAlertDialog(context: context, message: e.toString());
     }
+  }
+
+  void SignOut() {
+    auth.signOut();
   }
 
   void sendOtp({required BuildContext context, required String phone}) async {

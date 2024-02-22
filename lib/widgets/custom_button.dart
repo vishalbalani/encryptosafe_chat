@@ -11,6 +11,7 @@ class CustomButton extends StatelessWidget {
     this.color2,
     required this.color,
     required this.text,
+    this.isLoading = false,
   });
 
   final void Function()? onTap;
@@ -19,6 +20,7 @@ class CustomButton extends StatelessWidget {
   final Color? color2;
   final Color color;
   final String text;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -38,10 +40,15 @@ class CustomButton extends StatelessWidget {
           ),
         ),
         child: Center(
-          child: TextWidget(
-            text: text,
-            style: appstyle(18, color, FontWeight.bold),
-          ),
+          child: isLoading // Check if isLoading is true
+              ? CircularProgressIndicator(
+                  // Display CircularProgressIndicator if true
+                  valueColor: AlwaysStoppedAnimation<Color>(color),
+                )
+              : TextWidget(
+                  text: text,
+                  style: appstyle(18, color, FontWeight.bold),
+                ),
         ),
       ),
     );

@@ -24,17 +24,33 @@ class PageThree extends StatelessWidget {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 30.w),
             child: SvgPicture.asset(
-              "assets/images/onboard.svg",
+              "assets/images/onboard3.svg",
               width: 300,
             ),
           ),
-          const HeightSpacer(height: 100),
+          const HeightSpacer(height: 60),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextWidget(
-                text: "EncryptoSafe",
+                text: "Privacy Concern",
                 style: appstyle(30, Constants.white, FontWeight.w600),
+              ),
+              const HeightSpacer(height: 10),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 30.w,
+                ),
+                child: Text(
+                  "Securely message your friend with our asymmetric encryption!"
+                      .toUpperCase(),
+                  textAlign: TextAlign.center,
+                  style: appstyle(
+                    16,
+                    Constants.grayLight,
+                    FontWeight.normal,
+                  ),
+                ),
               ),
               const HeightSpacer(height: 50),
               CustomButton(
@@ -48,7 +64,8 @@ class PageThree extends StatelessWidget {
                   width: Constants.width * 0.9,
                   height: Constants.height * 0.06,
                   color: Constants.white,
-                  text: "Login with a phone number")
+                  text: "Login with a phone number"),
+              // const HeightSpacer(height: 50),
             ],
           ),
         ],

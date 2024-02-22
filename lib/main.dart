@@ -1,7 +1,6 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:encryptosafe/constants/constants.dart';
 import 'package:encryptosafe/firebase_options.dart';
-import 'package:encryptosafe/model/db_handle.dart';
 import 'package:encryptosafe/pages/onboarding/onboarding_page.dart';
 import 'package:encryptosafe/widgets/bottom_nav.dart';
 import 'package:encryptosafe/widgets/route.dart';
@@ -73,7 +72,6 @@ class MyApp extends ConsumerWidget {
 
 _initializeFirebase() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await DatabaseHandler.instance.database;
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await FlutterNotificationChannel.registerNotificationChannel(

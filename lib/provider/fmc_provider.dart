@@ -1,6 +1,5 @@
 // Example within a Riverpod Provider
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:encryptosafe/provider/firestore_provider.dart';
@@ -37,17 +36,13 @@ class FMCProvider {
           "android_channel_id": "chats"
         },
       };
-      var res = await post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
+      await post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
           headers: {
             HttpHeaders.contentTypeHeader: 'application/json',
             HttpHeaders.authorizationHeader:
                 'key= AAAAP8_jdDY:APA91bHOLef2-4Abx8kux1q4qhuSW4LRqky84xKfAhnQmqeXPAYE_s5eIFBtR-2I14ryGYVgu_E8ubjqgOXf_dFBA1_fcePreta7Fl0nGxEpDkIbYSfaztzz4SWnEeZRFPxD_T_KWzAC'
           },
           body: jsonEncode(body));
-      log('Response status: ${res.statusCode}');
-      log('Response body: ${res.body}');
-    } catch (e) {
-      log('\nsendPushNotificationE: $e');
-    }
+    } catch (e) {}
   }
 }
