@@ -12,6 +12,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+final loadingProvider = StateProvider<bool>((ref) => false);
+
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
@@ -21,7 +23,6 @@ class LoginPage extends ConsumerStatefulWidget {
 
 class _LoginPageState extends ConsumerState<LoginPage> {
   final TextEditingController phone = TextEditingController();
-  bool isLoading = false;
 
   Country country = Country(
     phoneCode: "91",
@@ -37,27 +38,23 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   );
 
   sendCodeToUser() {
-    if (phone.text.isEmpty || phone.text.length < 8) {
+    if (phone.text.isEmpty || phone.text.length < 10) {
       return showAlertDialog(
         context: context,
         message: "Please enter your phone number",
       );
     } else {
-      setState(() {
-        isLoading = true;
-      });
+      ref.read(loadingProvider.notifier).state = true;
       ref.read(authControllerProvider).sendSms(
-            context: context,
-            phone: '+${country.phoneCode}${phone.text}',
-          );
-      setState(() {
-        isLoading = false;
-      });
+          context: context,
+          phone: '+${country.phoneCode}${phone.text}',
+          ref: ref);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = ref.watch(loadingProvider);
     return Scaffold(
       body: SafeArea(
         child: Padding(

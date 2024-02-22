@@ -23,17 +23,18 @@ class OtpPage extends ConsumerWidget {
 
   void verifyOtpCode(BuildContext context, WidgetRef ref, String smsCode) {
     ref.read(AuthProvider).verifyOtp(
-          phone: phone,
-          context: context,
-          verificationId: smsCodeId,
-          smsCodeId: smsCodeId,
-          smsCode: smsCode,
-          mounted: true,
-        );
+        phone: phone,
+        context: context,
+        verificationId: smsCodeId,
+        smsCodeId: smsCodeId,
+        smsCode: smsCode,
+        mounted: true,
+        ref: ref);
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = ref.watch(loadingProvider);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -74,11 +75,13 @@ class OtpPage extends ConsumerWidget {
                   showCursor: true,
                   onCompleted: (value) {
                     if (value.length == 6) {
+                      ref.read(loadingProvider.notifier).state = true;
                       return verifyOtpCode(context, ref, value);
                     }
                   },
                   onSubmitted: (value) {
                     if (value.length == 6) {
+                      ref.read(loadingProvider.notifier).state = true;
                       return verifyOtpCode(context, ref, value);
                     }
                   },
@@ -101,7 +104,12 @@ class OtpPage extends ConsumerWidget {
                     ),
                   ],
                 ),
-              )
+              ),
+              (isLoading)
+                  ? const CircularProgressIndicator(
+                      color: Constants.white,
+                    )
+                  : const SizedBox(),
             ],
           ),
         ),

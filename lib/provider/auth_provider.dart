@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:encryptosafe/pages/auth/login_page.dart';
 import 'package:encryptosafe/widgets/custom_dialog.dart';
 import 'package:encryptosafe/widgets/random_utils.dart';
 import 'package:encryptosafe/widgets/route.dart';
@@ -16,14 +17,14 @@ class AuthProviderNotifier {
 
   AuthProviderNotifier({required this.auth});
 
-  void verifyOtp({
-    required BuildContext context,
-    required String verificationId,
-    required String smsCodeId,
-    required String smsCode,
-    required bool mounted,
-    required String phone,
-  }) async {
+  void verifyOtp(
+      {required BuildContext context,
+      required String verificationId,
+      required String smsCodeId,
+      required String smsCode,
+      required bool mounted,
+      required String phone,
+      required WidgetRef ref}) async {
     try {
       final credential = PhoneAuthProvider.credential(
         verificationId: verificationId,
@@ -32,7 +33,6 @@ class AuthProviderNotifier {
 
       final UserCredential = await auth.signInWithCredential(credential);
 
-
       final userDocRef = FirebaseFirestore.instance
           .collection('user')
           .doc(UserCredential.user!.uid);
@@ -40,7 +40,6 @@ class AuthProviderNotifier {
       final userDocSnapshot = await userDocRef.get();
 
       if (userDocSnapshot.exists) {
-        
       } else {
         var name = RandomUtils().getRandomName();
         var username = await RandomUtils().generateUniqueUsername(
@@ -61,8 +60,6 @@ class AuthProviderNotifier {
         });
       }
 
-      
-
       if (!mounted) return;
 
       Navigator.pushNamedAndRemoveUntil(
@@ -72,6 +69,8 @@ class AuthProviderNotifier {
       );
     } on FirebaseAuth catch (e) {
       showAlertDialog(context: context, message: e.toString());
+    } finally {
+      ref.read(loadingProvider.notifier).state = false;
     }
   }
 
@@ -79,7 +78,10 @@ class AuthProviderNotifier {
     auth.signOut();
   }
 
-  void sendOtp({required BuildContext context, required String phone}) async {
+  void sendOtp(
+      {required BuildContext context,
+      required String phone,
+      required WidgetRef ref}) async {
     try {
       await auth.verifyPhoneNumber(
         phoneNumber: phone,
@@ -104,32 +106,36 @@ class AuthProviderNotifier {
       );
     } on FirebaseAuth catch (e) {
       showAlertDialog(context: context, message: e.toString());
+    } finally {
+      ref.read(loadingProvider.notifier).state = false;
     }
   }
 
   // Inside AuthProviderNotifier class or wherever you have access to the User instance
-  // void updateDisplayName(String displayName) async {
-  //   try {
-  //     // Get the current user
-  //     User? currentUser = auth.currentUser;
+  void updateDisplayName(
+      String displayName, BuildContext context, WidgetRef ref) async {
+    try {
+      // Get the current user
+      User? currentUser = auth.currentUser;
 
-  //     if (currentUser != null) {
-  //       await currentUser.updateDisplayName(displayName);
+      if (currentUser != null) {
+        await currentUser.updateDisplayName(displayName);
 
-  //       // Update display name in Firestore
-  //       await FirebaseFirestore.instance
-  //           .collection('user')
-  //           .doc(currentUser.uid)
-  //           .update({'name': displayName});
-
-  //       print('Display name updated successfully: $displayName');
-  //     } else {
-  //       print('User not found.');
-  //     }
-  //   } catch (e) {
-  //     print('Error updating display name: $e');
-  //   }
-  // }
+        // Update display name in Firestore
+        await FirebaseFirestore.instance
+            .collection('user')
+            .doc(currentUser.uid)
+            .update({'name': displayName});
+        showAlertDialog(context: context, message: 'Name Updated Successfully');
+      } else {
+        showAlertDialog(context: context, message: 'Something Went Wrong');
+      }
+    } catch (e) {
+      showAlertDialog(context: context, message: e.toString());
+    } finally {
+      ref.read(loadingProvider.notifier).state = false;
+    }
+  }
 }
 
 final authControllerProvider = Provider((ref) {
@@ -149,6 +155,7 @@ class AuthController {
     required String smsCode,
     required bool mounted,
     required String phone,
+    required WidgetRef ref,
   }) {
     authProvider.verifyOtp(
         context: context,
@@ -156,17 +163,26 @@ class AuthController {
         smsCodeId: smsCodeId,
         smsCode: smsCode,
         mounted: mounted,
-        phone: phone);
+        phone: phone,
+        ref: ref);
   }
 
   void sendSms({
     required BuildContext context,
     required String phone,
+    required WidgetRef ref,
   }) {
-    authProvider.sendOtp(context: context, phone: phone);
+    authProvider.sendOtp(context: context, phone: phone, ref: ref);
   }
 
   String myID({required String myUuid}) {
     return myUuid;
+  }
+
+  void updateName(
+      {required String Name,
+      required BuildContext context,
+      required WidgetRef ref}) {
+    authProvider.updateDisplayName(Name, context, ref);
   }
 }

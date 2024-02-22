@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:encryptosafe/provider/fmc_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:path/path.dart';
 
 final firestoreProvider = Provider((ref) {
   return FireStoreProviderNotifier(
@@ -138,5 +139,19 @@ class FireStoreProviderNotifier {
         .collection('chatrooms')
         .doc(chatRoomId)
         .update({'unreadCount': 0});
+  }
+
+  Future<List<String?>> readUserData() async {
+    DocumentSnapshot snapshot =
+        await instance.collection('user').doc(user.uid).get();
+
+    if (snapshot.exists) {
+      String? name = snapshot['name'];
+      String? username = snapshot['username'];
+
+      return [name, username];
+    } else {
+      return ['User not found'];
+    }
   }
 }
