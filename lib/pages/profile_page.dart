@@ -5,6 +5,7 @@ import 'package:encryptosafe/provider/auth_provider.dart';
 import 'package:encryptosafe/provider/firestore_provider.dart';
 import 'package:encryptosafe/widgets/appStyle.dart';
 import 'package:encryptosafe/widgets/custom_button.dart';
+import 'package:encryptosafe/widgets/custom_dialog.dart';
 import 'package:encryptosafe/widgets/custom_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -87,7 +88,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 padding: const EdgeInsets.all(10.0),
                 child: CustomButton(
                   onTap: () {
-                    if (name != controllerNickname.text) {
+                    if (controllerNickname.text.length < 2) {
+                      showAlertDialog(
+                          context: context,
+                          message:
+                              "The provided name format is not allowed. Please enter a valid name.");
+                    } else if (name != controllerNickname.text &&
+                        controllerNickname.text.length > 2) {
                       ref.read(loadingProvider.notifier).state = true;
                       ref.read(authControllerProvider).updateName(
                           Name: controllerNickname.text,

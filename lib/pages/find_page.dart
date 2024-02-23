@@ -14,6 +14,8 @@ import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:radio_group_v2/radio_group_v2.dart';
 
+
+
 class FindPage extends ConsumerStatefulWidget {
   const FindPage({super.key});
 
@@ -44,11 +46,28 @@ class _FindPageState extends ConsumerState<FindPage> {
       "users": [uid, snapshot['uid']],
     };
     ref.read(firestoreProvider).createChatRoom(chatRoomId, chatRoomInfoMap);
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => ChatPage(
-        peerData: snapshot,
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return ChatPage(peerData: snapshot);
+        },
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.easeInOut;
+
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+          var offsetAnimation = animation.drive(tween);
+
+          return SlideTransition(
+            position: offsetAnimation,
+            child: child,
+          );
+        },
       ),
-    ));
+    );
   }
 
   getChatRoomIdbyUsername(String a, String b) {
@@ -107,7 +126,7 @@ class _FindPageState extends ConsumerState<FindPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: CustomTextField(
-                  hintText: "Search",
+                  hintText: "Search(case-sensitive)",
                   controller: gSearchController,
                   prefixIcon: Container(
                     padding: const EdgeInsets.all(14),
@@ -121,7 +140,7 @@ class _FindPageState extends ConsumerState<FindPage> {
                   ),
                   onChanged: (value) {
                     SearchProvider.search(
-                        value, filter); // Trigger the search logic
+                        value, filter,); // Trigger the search logic
                     setState(() {}); // Update the UI after search
                   },
                 ),
@@ -131,7 +150,7 @@ class _FindPageState extends ConsumerState<FindPage> {
         ),
       ),
       body: FutureBuilder<QuerySnapshot>(
-        future: SearchProvider.search(gSearchController.text, filter),
+        future: SearchProvider.search(gSearchController.text, filter,),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

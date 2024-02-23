@@ -11,6 +11,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+final filterNameProvider = StateProvider<String>((ref) => "");
+
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
@@ -72,6 +74,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
               ),
               CustomTextField(
+                onChanged: (value) {
+                  ref.read(filterNameProvider.notifier).state = value;
+                },
                 hintText: "Search",
                 controller: search,
                 prefixIcon: Container(

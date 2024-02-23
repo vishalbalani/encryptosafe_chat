@@ -13,24 +13,69 @@ class RouteGenerator {
   static const String main = 'main';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
-    print('Route: ${settings.name}');
     switch (settings.name) {
       case onboarding:
-        return MaterialPageRoute(
-          builder: (_) => const onBoardingPage(),
+        return PageRouteBuilder(
+          pageBuilder: (_, __, ___) => const onBoardingPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = 0.0;
+            const end = 1.0;
+            const curve = Curves.easeInOut;
+
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+            var fadeAnimation = animation.drive(tween);
+
+            return FadeTransition(
+              opacity: fadeAnimation,
+              child: child,
+            );
+          },
         );
       case login:
-        return MaterialPageRoute(
-          builder: (_) => const LoginPage(),
+        return PageRouteBuilder(
+          pageBuilder: (_, __, ___) => const LoginPage(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = 0.0;
+            const end = 1.0;
+            const curve = Curves.easeInOut;
+
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+            var fadeAnimation = animation.drive(tween);
+
+            return FadeTransition(
+              opacity: fadeAnimation,
+              child: child,
+            );
+          },
         );
       case otp:
         final Map args = settings.arguments as Map;
-        return MaterialPageRoute(
-          builder: (_) => OtpPage(
+        return PageRouteBuilder(
+          pageBuilder: (_, __, ___) => OtpPage(
             phone: args['phone'],
             smsCodeId: args['smsCodeId'],
           ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const begin = 0.0;
+            const end = 1.0;
+            const curve = Curves.easeInOut;
+
+            var tween =
+                Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+            var fadeAnimation = animation.drive(tween);
+
+            return FadeTransition(
+              opacity: fadeAnimation,
+              child: child,
+            );
+          },
         );
+
       case main:
         return MaterialPageRoute(
           builder: (_) => const MyApp(),

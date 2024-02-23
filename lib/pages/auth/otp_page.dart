@@ -1,3 +1,4 @@
+import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:encryptosafe/constants/constants.dart';
 import 'package:encryptosafe/pages/auth/login_page.dart';
 import 'package:encryptosafe/provider/auth_provider.dart';
@@ -39,78 +40,84 @@ class OtpPage extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
       ),
-      body: SafeArea(
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              HeightSpacer(height: Constants.height * 0.12),
-              Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 30.w),
-                  child: SvgPicture.asset(
-                    "assets/images/onboard.svg",
-                    width: Constants.width * 0.5,
-                  )),
-              const HeightSpacer(
-                height: 26,
-              ),
-              TextWidget(
-                text: "Enter your otp code",
-                style: appstyle(
-                  18,
-                  Constants.white,
-                  FontWeight.bold,
+      body: DoubleBackToCloseApp(
+        snackBar: const SnackBar(
+          content: Center(child: Text('Press the back button again to exit')),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                HeightSpacer(height: Constants.height * 0.12),
+                Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 30.w),
+                    child: SvgPicture.asset(
+                      "assets/images/onboard.svg",
+                      width: Constants.width * 0.5,
+                    )),
+                const HeightSpacer(
+                  height: 26,
                 ),
-              ),
-              const HeightSpacer(
-                height: 26,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: Pinput(
-                  length: 6,
-                  defaultPinTheme: defaultPinTheme,
-                  focusedPinTheme: focusedPinTheme,
-                  submittedPinTheme: submittedPinTheme,
-                  showCursor: true,
-                  onCompleted: (value) {
-                    if (value.length == 6) {
-                      ref.read(loadingProvider.notifier).state = true;
-                      return verifyOtpCode(context, ref, value);
-                    }
-                  },
-                  onSubmitted: (value) {
-                    if (value.length == 6) {
-                      ref.read(loadingProvider.notifier).state = true;
-                      return verifyOtpCode(context, ref, value);
-                    }
-                  },
+                TextWidget(
+                  text: "Enter your otp code",
+                  style: appstyle(
+                    18,
+                    Constants.white,
+                    FontWeight.bold,
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                            builder: (context) => const LoginPage()));
-                      },
-                      child: TextWidget(
-                          text: "Edit Phone Number",
-                          style:
-                              appstyle(12, Constants.white, FontWeight.bold)),
-                    ),
-                  ],
+                const HeightSpacer(
+                  height: 26,
                 ),
-              ),
-              (isLoading)
-                  ? const CircularProgressIndicator(
-                      color: Constants.white,
-                    )
-                  : const SizedBox(),
-            ],
+                Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: Pinput(
+                    length: 6,
+                    defaultPinTheme: defaultPinTheme,
+                    focusedPinTheme: focusedPinTheme,
+                    submittedPinTheme: submittedPinTheme,
+                    showCursor: true,
+                    onCompleted: (value) {
+                      if (value.length == 6) {
+                        ref.read(loadingProvider.notifier).state = true;
+                        return verifyOtpCode(context, ref, value);
+                      }
+                    },
+                    onSubmitted: (value) {
+                      if (value.length == 6) {
+                        ref.read(loadingProvider.notifier).state = true;
+                        return verifyOtpCode(context, ref, value);
+                      }
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: (context) => const LoginPage()));
+                        },
+                        child: TextWidget(
+                            text: "Edit Phone Number",
+                            style:
+                                appstyle(12, Constants.white, FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                ),
+                (isLoading)
+                    ? const CircularProgressIndicator(
+                        color: Constants.white,
+                      )
+                    : const SizedBox(),
+              ],
+            ),
           ),
         ),
       ),

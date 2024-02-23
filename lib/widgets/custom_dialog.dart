@@ -13,8 +13,8 @@ showAlertDialog({
     context: context,
     builder: (context) {
       return AlertDialog(
-        content: TextWidget(
-          text: message,
+        content: Text(
+          message,
           style: appstyle(18, Constants.white, FontWeight.w600),
         ),
         contentPadding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 0.h),

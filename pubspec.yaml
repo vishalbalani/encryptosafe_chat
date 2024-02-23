@@ -61,6 +61,7 @@ dependencies:
   flutter_svg: ^2.0.9
   flutter_native_splash: ^2.3.9
   flutter_launcher_icons: ^0.13.1
+  double_back_to_close_app: ^2.1.0
 
 dev_dependencies:
   flutter_test:

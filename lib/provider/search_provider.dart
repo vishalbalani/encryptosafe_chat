@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:encryptosafe/provider/firestore_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final searchProvider = Provider((ref) {
@@ -12,8 +13,8 @@ class SearchProviderNotifier {
 
   SearchProviderNotifier({required this.instance});
 
-  Future<QuerySnapshot> search(String textSearch, int value) async {
-    // textSearch = textSearch.toLowerCase();
+  Future<QuerySnapshot> search(
+      String textSearch, int value) async {
     Query query = instance.collection("user");
     if (value == 1) {
       query = query

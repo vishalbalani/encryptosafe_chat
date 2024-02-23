@@ -1,4 +1,5 @@
 import 'package:country_picker/country_picker.dart';
+import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:encryptosafe/constants/constants.dart';
 import 'package:encryptosafe/provider/auth_provider.dart';
 import 'package:encryptosafe/widgets/appStyle.dart';
@@ -38,7 +39,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   );
 
   sendCodeToUser() {
-    if (phone.text.isEmpty || phone.text.length < 10) {
+    if (phone.text.isEmpty || phone.text.length < 8) {
       return showAlertDialog(
         context: context,
         message: "Please enter your phone number",
@@ -56,83 +57,88 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget build(BuildContext context) {
     final isLoading = ref.watch(loadingProvider);
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.w),
-          child: ListView(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 30.w),
-                child: SvgPicture.asset(
-                  "assets/images/onboard.svg",
-                  width: 300,
+      body: DoubleBackToCloseApp(
+        snackBar: const SnackBar(
+          content: Center(child: Text('Press the back button again to exit')),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.w),
+            child: ListView(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 30.w),
+                  child: SvgPicture.asset(
+                    "assets/images/onboard.svg",
+                    width: 300,
+                  ),
                 ),
-              ),
-              const HeightSpacer(height: 20),
-              Container(
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.only(left: 16.w),
-                child: TextWidget(
-                  text: "Please enter your phone number",
-                  style: appstyle(17, Constants.white, FontWeight.w500),
+                const HeightSpacer(height: 20),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  padding: EdgeInsets.only(left: 16.w),
+                  child: TextWidget(
+                    text: "Please enter your phone number",
+                    style: appstyle(17, Constants.white, FontWeight.w500),
+                  ),
                 ),
-              ),
-              const HeightSpacer(height: 20),
-              Center(
-                child: CustomTextField(
-                  controller: phone,
-                  prefixIcon: Container(
-                    padding: const EdgeInsets.all(14),
-                    child: GestureDetector(
-                      onTap: () {
-                        showCountryPicker(
-                          context: context,
-                          countryListTheme: CountryListThemeData(
-                            backgroundColor: Constants.darkBK,
-                            bottomSheetHeight: Constants.height * 0.6,
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              topRight: Radius.circular(20),
+                const HeightSpacer(height: 20),
+                Center(
+                  child: CustomTextField(
+                    controller: phone,
+                    prefixIcon: Container(
+                      padding: const EdgeInsets.all(14),
+                      child: GestureDetector(
+                        onTap: () {
+                          showCountryPicker(
+                            context: context,
+                            countryListTheme: CountryListThemeData(
+                              backgroundColor: Constants.darkBK,
+                              bottomSheetHeight: Constants.height * 0.6,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20),
+                              ),
                             ),
+                            onSelect: (code) {
+                              setState(() {
+                                country = code;
+                              });
+                            },
+                          );
+                        },
+                        child: TextWidget(
+                          text: "${country.flagEmoji} + ${country.phoneCode}",
+                          style: appstyle(
+                            18,
+                            Constants.darkBK,
+                            FontWeight.bold,
                           ),
-                          onSelect: (code) {
-                            setState(() {
-                              country = code;
-                            });
-                          },
-                        );
-                      },
-                      child: TextWidget(
-                        text: "${country.flagEmoji} + ${country.phoneCode}",
-                        style: appstyle(
-                          18,
-                          Constants.darkBK,
-                          FontWeight.bold,
                         ),
                       ),
                     ),
+                    keyboardType: TextInputType.number,
+                    hintText: "Enter phone number",
+                    hintStyle: appstyle(16, Constants.darkBK, FontWeight.w600),
                   ),
-                  keyboardType: TextInputType.number,
-                  hintText: "Enter phone number",
-                  hintStyle: appstyle(16, Constants.darkBK, FontWeight.w600),
                 ),
-              ),
-              const HeightSpacer(height: 20),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: CustomButton(
-                  onTap: () {
-                    sendCodeToUser();
-                  },
-                  width: Constants.width * 0.9,
-                  height: Constants.height * 0.075,
-                  color: Constants.darkBK,
-                  color2: Constants.white,
-                  text: "Send Code",
-                  isLoading: isLoading,
+                const HeightSpacer(height: 20),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: CustomButton(
+                    onTap: () {
+                      sendCodeToUser();
+                    },
+                    width: Constants.width * 0.9,
+                    height: Constants.height * 0.075,
+                    color: Constants.darkBK,
+                    color2: Constants.white,
+                    text: "Send Code",
+                    isLoading: isLoading,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

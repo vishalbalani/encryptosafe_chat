@@ -1,3 +1,4 @@
+import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:encryptosafe/constants/constants.dart';
 import 'package:encryptosafe/pages/find_page.dart';
 import 'package:encryptosafe/pages/gpt_page.dart';
@@ -40,7 +41,11 @@ class _BottomNavState extends State<BottomNav> {
         break;
     }
     return Scaffold(
-      body: currentScreen,
+      body: DoubleBackToCloseApp(
+          snackBar: const SnackBar(
+            content: Center(child: Text('Press the back button again to exit')),
+          ),
+          child: currentScreen),
       bottomNavigationBar: SizedBox(
         height: 70.w,
         child: ClipRRect(

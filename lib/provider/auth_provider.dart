@@ -31,33 +31,40 @@ class AuthProviderNotifier {
         smsCode: smsCode,
       );
 
-      final UserCredential = await auth.signInWithCredential(credential);
+      // final UserCredential = await auth.signInWithCredential(credential);
+      final UserCredential userCredential =
+          await auth.signInWithCredential(credential);
 
       final userDocRef = FirebaseFirestore.instance
           .collection('user')
-          .doc(UserCredential.user!.uid);
+          .doc(userCredential.user!.uid);
 
-      final userDocSnapshot = await userDocRef.get();
+      try {
+        final userDocSnapshot = await userDocRef.get();
 
-      if (userDocSnapshot.exists) {
-      } else {
-        var name = RandomUtils().getRandomName();
-        var username = await RandomUtils().generateUniqueUsername(
-          name: name,
-          phoneNumber: phone,
-        );
-        await UserCredential.user!.updateDisplayName(name);
-        await userDocRef.set({
-          "uid": UserCredential.user!.uid,
-          "username": username,
-          "name": name,
-          "phone": phone,
-          "imageURL": "",
-          "public": '',
-          "is_online": true,
-          "last_active": "",
-          "fmc_token": ""
-        });
+        if (!userDocSnapshot.exists) {
+          var name = RandomUtils().getRandomName();
+          var username = await RandomUtils().generateUniqueUsername(
+            name: name,
+            phoneNumber: phone,
+          );
+
+          await userCredential.user!.updateDisplayName(name);
+
+          await userDocRef.set({
+            "uid": userCredential.user!.uid,
+            "username": username,
+            "name": name,
+            "phone": phone,
+            "imageURL": "",
+            "public": '',
+            "is_online": true,
+            "last_active": "",
+            "fmc_token": "",
+          });
+        }
+      } catch (firestoreError) {
+        // Handle Firestore-related errors
       }
 
       if (!mounted) return;
@@ -67,10 +74,22 @@ class AuthProviderNotifier {
         RouteGenerator.main,
         (route) => false,
       );
-    } on FirebaseAuth catch (e) {
-      showAlertDialog(context: context, message: e.toString());
+    } on FirebaseAuthException catch (e) {
+      showAlertDialog(
+          context: context, message: getFirebaseAuthErrorMessage(e));
     } finally {
       ref.read(loadingProvider.notifier).state = false;
+    }
+  }
+
+  String getFirebaseAuthErrorMessage(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'invalid-verification-code':
+        return 'Invalid verification code. Please try again.';
+      case 'too-many-requests':
+        return 'Too many requests. Please try again later.';
+      default:
+        return 'Authentication failed. Please try again.';
     }
   }
 
@@ -89,9 +108,11 @@ class AuthProviderNotifier {
           await auth.signInWithCredential(credential);
         },
         verificationFailed: (FirebaseAuthException e) {
+          ref.read(loadingProvider.notifier).state = false;
           showAlertDialog(context: context, message: e.toString());
         },
         codeSent: (String verificationId, int? resendToken) {
+          ref.read(loadingProvider.notifier).state = false;
           Navigator.pushNamedAndRemoveUntil(
             context,
             RouteGenerator.otp,
@@ -105,9 +126,8 @@ class AuthProviderNotifier {
         codeAutoRetrievalTimeout: (String smsCodeId) {},
       );
     } on FirebaseAuth catch (e) {
-      showAlertDialog(context: context, message: e.toString());
-    } finally {
       ref.read(loadingProvider.notifier).state = false;
+      showAlertDialog(context: context, message: e.toString());
     }
   }
 
